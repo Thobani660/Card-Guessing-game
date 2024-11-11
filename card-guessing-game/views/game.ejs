@@ -4,27 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Guessing Game</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Make sure styles.css exists in /public/css -->
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <%- include('partials/header') %> <!-- This includes the header from partials -->
-
-    <!-- Game board container -->
-    <div id="game-board" class="grid">
-        <% for (let i = 0; i < 36; i++) { %>
-            <div class="card" data-id="<%= i %>" onclick="flipCard(this)">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        <% } %>
+<body >
+    <div id="welcome-screen" class="screen">
+        <h1 style="margin-top: -20px; font-family: 'Arial', sans-serif; font-size: 3rem; color: Orange; text-align: center; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);">
+            Welcome to the Guessing Game!
+        </h1>
+        <p style="font-family: 'Arial', sans-serif; font-size: 1.25rem; color: #555; text-align: center; margin-top: 390px; font-weight: bold; padding: 10px; border-radius: 8px;">
+            Please press the play button to start the game.
+        </p>
+        <button onclick="startGame()">Play</button>
     </div>
 
-    <!-- Win message -->
-    <div id="win-message" class="hidden">
-        <h2>Congratulations! You've won the game!</h2>
-        <button onclick="resetGame()">Play Again</button>
+    <div id="game-screen" class="screen hidden">
+        <h1>Card Guessing Game</h1>
+        <div id="timer">Time: 0s</div>
+        <div id="moves">Moves: 0</div>
+        <div id="game-board" class="grid"></div>
+
+        <div id="win-message" class="hidden">
+            <h2>Congratulations! You've won the game!</h2>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+
+        <div id="celebration" class="hidden">
+            <!-- Celebration animation like confetti or cards bouncing -->
+        </div>
+
+        <button onclick="pauseGame()">Pause</button>
+        <button onclick="resumeGame()">Resume</button>
     </div>
 
-    <script src="/js/game.js"></script> <!-- Link to your JavaScript file in /public/js -->
+    <script src="/js/game.js"></script>
 </body>
 </html>
