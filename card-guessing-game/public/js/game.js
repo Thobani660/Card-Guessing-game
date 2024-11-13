@@ -2,33 +2,34 @@ let hasFlippedCard = false;
 let lockBoard = false;
 let firstCard, secondCard;
 let matchedCards = 0;
-let totalPairs = 18; // 18 pairs (36 cards)
+let totalPairs = 18; // Default to 18 pairs (36 cards) for "Hard" difficulty
 let timer;
 let timeElapsed = 0;
 let moves = 0; // Track moves
 let isPaused = false;
+let bestTimeRecord = null;
 
 const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'];
-const shuffledCards = [...letters, ...letters]; // Duplicate for pairs
+let shuffledCards = [];
+const gameBoard = document.getElementById('game-board');
 
 // Shuffle the cards using Fisher-Yates algorithm
 function shuffleCards() {
     for (let i = shuffledCards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]]; // Swap
+        [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
     }
 }
 
-// Create the cards dynamically and add them to the game board
+// Create cards dynamically and add them to the game board
 function createCards() {
-    const gameBoard = document.getElementById('game-board');
-    gameBoard.innerHTML = ''; // Clear any existing cards
-    shuffledCards.forEach((letter, index) => {
+    gameBoard.innerHTML = '';
+    shuffledCards.forEach((letter) => {
         const card = document.createElement('div');
         card.classList.add('card');
         card.dataset.id = letter;
         card.innerHTML = `
-            <div class="card-front">?</div>
+            <div class="card-front">$</div>
             <div class="card-back">${letter}</div>
         `;
         card.addEventListener('click', flipCard);
@@ -41,7 +42,7 @@ function flipCard() {
     if (lockBoard || this === firstCard || isPaused) return;
 
     this.classList.add('flipped');
-    moves++; // Increment move counter
+    moves++;
 
     if (!hasFlippedCard) {
         hasFlippedCard = true;
@@ -63,8 +64,9 @@ function checkForMatch() {
 function disableCards() {
     firstCard.removeEventListener('click', flipCard);
     secondCard.removeEventListener('click', flipCard);
-    matchedCards += 2; // Increment matched cards
+    matchedCards += 2;
     resetBoard();
+
     if (checkForWin()) {
         setTimeout(displayWinMessage, 500);
     }
@@ -91,17 +93,23 @@ function checkForWin() {
     return matchedCards === totalPairs * 2;
 }
 
-// Display the win message
+// Display the win message with time record
 function displayWinMessage() {
-    // Celebration Animation
-    triggerCelebration();
+    clearInterval(timer);
+    const winMessage = document.getElementById('win-message');
+    winMessage.classList.remove('hidden');
+    const timeRecord = document.getElementById('time-record');
+    timeRecord.textContent = `Time Taken: ${timeElapsed}s`;
 
-    // Display win message
-    document.getElementById('win-message').classList.remove('hidden');
+    if (!bestTimeRecord || timeElapsed < bestTimeRecord) {
+        bestTimeRecord = timeElapsed;
+        document.getElementById('best-time').textContent = `Best Time: ${bestTimeRecord}s`;
+    }
 }
 
 // Start the timer
 function startTimer() {
+    document.getElementById('restart-button').classList.remove('hidden');
     timer = setInterval(() => {
         timeElapsed++;
         document.getElementById('timer').textContent = `Time: ${timeElapsed}s`;
@@ -114,27 +122,29 @@ function stopTimer() {
 }
 
 // Start the game
-function startGame() {
-    document.getElementById('welcome-screen').classList.add('hidden');
-    document.getElementById('game-screen').classList.remove('hidden');
-    shuffleCards();
-    createCards();
-    startTimer();
-}
-
-// Reset the game
-function resetGame() {
+function startGame(difficulty = "hard") {
     matchedCards = 0;
     moves = 0;
     timeElapsed = 0;
     document.getElementById('moves').textContent = `Moves: ${moves}`;
     document.getElementById('timer').textContent = `Time: ${timeElapsed}s`;
+    document.getElementById('win-message').classList.add('hidden');
+
+    totalPairs = difficulty === "easy" ? 6 : difficulty === "medium" ? 12 : 18;
+    shuffledCards = [...letters.slice(0, totalPairs), ...letters.slice(0, totalPairs)];
     shuffleCards();
     createCards();
-    document.getElementById('win-message').classList.add('hidden');
+
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+
     stopTimer();
     startTimer();
-    document.getElementById('celebration').classList.add('hidden');
+}
+
+// Reset the game
+function resetGame() {
+    startGame();
 }
 
 // Pause the game
@@ -151,14 +161,21 @@ function resumeGame() {
 
 // Trigger celebration animation
 function triggerCelebration() {
-    // Play the celebration animations
     document.getElementById('celebration').classList.remove('hidden');
-
-    // Create confetti animation or any other effect you want
     setTimeout(() => {
         document.getElementById('celebration').classList.add('hidden');
     }, 5000);
 }
 
-// Handle Play Again Button
+// Difficulty level selection
+function setDifficulty(level) {
+    alert(`Difficulty set to ${level.toUpperCase()}`);
+    startGame(level);
+}
+
+// Event listeners for difficulty and reset
+document.getElementById('easy-level').addEventListener('click', () => setDifficulty("easy"));
+document.getElementById('medium-level').addEventListener('click', () => setDifficulty("medium"));
+document.getElementById('hard-level').addEventListener('click', () => setDifficulty("hard"));
 document.getElementById('play-again').addEventListener('click', resetGame);
+document.getElementById('restart-button').addEventListener('click', resetGame);

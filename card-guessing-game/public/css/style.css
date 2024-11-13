@@ -76,6 +76,7 @@ body {
 
 .card-front {
     background: linear-gradient(45deg, #3b9fda, #66d4db);
+    color: purple;
 }
 
 .card-back {
@@ -122,6 +123,8 @@ button {
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 10px;
+    border: 2px solid rgba(128, 0, 128, 0.171);
+
 }
 .gameHeader {
     overflow: hidden;
@@ -151,8 +154,36 @@ button {
 
 
 button:hover {
-    background-color: #45a049;
+    background-color: #90c21d;
     border: 2px solid gold;
     margin-top: 10px;
 
 }
+.level {
+    background-color: rgba(128, 0, 128, 0.308);
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+}
+
+.level:hover {
+    background-color: rgba(128, 0, 128, 0.6);
+}
+
+.hidden {
+    display: none;
+}/* Add styles for Restart button */
+button#restart-button {
+    display: none;
+}
+
+/* Add styles for record display */
+#win-message h3 {
+    margin: 10px 0;
+    color: #4CAF50;
+}
+
